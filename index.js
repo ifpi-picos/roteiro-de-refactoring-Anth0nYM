@@ -1,5 +1,4 @@
 const { readFileSync } = require('fs');
-
 function gerarFaturaStr(fatura, pecas) {
   let totalFatura = 0;
   let creditos = 0;
@@ -10,15 +9,18 @@ function gerarFaturaStr(fatura, pecas) {
       minimumFractionDigits: 2
     }).format;
 
-  function calcularTotalApresentacao(apre, peca) {
+  function getPeca(apresentacao) {
+    return pecas[apresentacao.id];
+  }
+
+  function calcularTotalApresentacao(apre) {
     let total = 0;
-    switch (peca.tipo) {
+    switch (getPeca(apre).tipo) {
       case "tragedia":
         total = 40000;
         if (apre.audiencia > 30) {
           total += 1000 * (apre.audiencia - 30);
         }
-        total += 300 * apre.audiencia;
         break;
       case "comedia":
         total = 30000;
@@ -28,30 +30,28 @@ function gerarFaturaStr(fatura, pecas) {
         total += 300 * apre.audiencia;
         break;
       default:
-        throw new Error(`Peça desconhecida: ${peca.tipo}`);
+        throw new Error(`Peça desconhecia: ${getPeca(apre).tipo}`); z
     }
     return total;
   }
 
   for (let apre of fatura.apresentacoes) {
-    const peca = pecas[apre.id];
-    let total = calcularTotalApresentacao(apre, peca);
+    let total = calcularTotalApresentacao(apre);
 
     // créditos para próximas contratações
     creditos += Math.max(apre.audiencia - 30, 0);
-    if (peca.tipo === "comedia")
+    if (getPeca(apre).tipo === "comedia")
       creditos += Math.floor(apre.audiencia / 5);
 
     // mais uma linha da fatura
-    faturaStr += `  ${peca.nome}: ${formato(total / 100)} (${apre.audiencia} assentos)\n`;
+    faturaStr += `  ${getPeca(apre).nome}: ${formato(total / 100)} (${apre.audiencia} assentos)\n`;
     totalFatura += total;
   }
   faturaStr += `Valor total: ${formato(totalFatura / 100)}\n`;
   faturaStr += `Créditos acumulados: ${creditos} \n`;
   return faturaStr;
 }
-
 const faturas = JSON.parse(readFileSync('./faturas.json'));
 const pecas = JSON.parse(readFileSync('./pecas.json'));
-const faturaStr = gerarFaturaStr(faturas,pecas);
-console.log(faturaStr);  
+const faturaStr = gerarFaturaStr(faturas, pecas);
+console.log(faturaStr);
