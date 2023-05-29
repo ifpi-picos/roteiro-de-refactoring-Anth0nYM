@@ -53,3 +53,5 @@ function gerarFaturaStr(fatura, pecas) {
 
 const faturas = JSON.parse(readFileSync('./faturas.json'));
 const pecas = JSON.parse(readFileSync('./pecas.json'));
+const faturaStr = gerarFaturaStr(faturas,pecas);
+console.log(faturaStr);  
