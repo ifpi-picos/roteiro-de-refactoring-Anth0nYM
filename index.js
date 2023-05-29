@@ -30,12 +30,12 @@ function gerarFaturaStr (fatura, pecas) {
           throw new Error(`Peça desconhecia: ${peca.tipo}`);
       }
   
-      // créditos para próximas contratações
+      // créditos para próximas contratações.
       creditos += Math.max(apre.audiencia - 30, 0);
       if (peca.tipo === "comedia") 
          creditos += Math.floor(apre.audiencia / 5);
   
-      // mais uma linha da fatura
+      // mais uma linha da fatura.
       faturaStr += `  ${peca.nome}: ${formato(total/100)} (${apre.audiencia} assentos)\n`;
       totalFatura += total;
     }
